@@ -46,6 +46,7 @@ jobs:
           echo ""
           echo "=== S3 permission test ==="
           aws  s3 ls s3://lys-s3-test/myapp/source/ || true
+          
       - name: Sync repo to S3 (source upload)
         run: |
           aws s3 sync . "s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/" \
