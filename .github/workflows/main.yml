@@ -1,0 +1,50 @@
+name: Upload Python Source to S3 (OIDC)
+
+on:
+  push:
+    # 모든 브랜치에서 감지하되, 아래 파일 변경이 있을 때만 실행
+    branches: ["**"]
+    paths:
+      - "**/*.py"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - "poetry.lock"
+      - ".github/workflows/main.yml"   # ✅ 실제 워크플로 파일명으로 수정
+  workflow_dispatch:                   # ✅ Actions 화면에서 수동 실행 버튼
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET: my-bucket-name
+  S3_PREFIX: myapp/source
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsDeployRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync repo to S3 (source upload)
+        run: |
+          aws s3 sync . "s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/" \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "__pycache__/*" \
+            --exclude ".venv/*" \
+            --exclude "venv/*" \
+            --exclude ".pytest_cache/*" \
+            --exclude ".mypy_cache/*" \
+            --exclude ".idea/*" \
+            --exclude ".vscode/*"
