@@ -48,3 +48,5 @@ jobs:
             --exclude ".mypy_cache/*" \
             --exclude ".idea/*" \
             --exclude ".vscode/*"
+      - name: Who am I
+        run: aws sts get-caller-identity
