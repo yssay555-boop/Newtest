@@ -32,7 +32,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsDeployRole
+          role-to-assume: arn:aws:iam::903070443788:role/GitHubActionsDeployRole
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Sync repo to S3 (source upload)
