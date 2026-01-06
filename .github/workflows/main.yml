@@ -18,7 +18,7 @@ permissions:
 
 env:
   AWS_REGION: ap-northeast-2
-  S3_BUCKET: my-bucket-name
+  S3_BUCKET: lys-s3-test
   S3_PREFIX: myapp/source
 
 jobs:
