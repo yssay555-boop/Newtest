@@ -24,8 +24,16 @@ env:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    
-    steps:
+    steps:    
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::903070443788:role/GitHubActionsDeployRole
+          aws-region: ${{ env.AWS_REGION }}
+      
       - name: Debug AWS identity
         run: |
           echo "=== AWS identity ==="
@@ -38,16 +46,6 @@ jobs:
           echo ""
           echo "=== S3 permission test ==="
           aws  s3 ls s3://lys-s3-test/myapp/source/ || true
-          
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::903070443788:role/GitHubActionsDeployRole
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Sync repo to S3 (source upload)
         run: |
           aws s3 sync . "s3://${{ env.S3_BUCKET }}/${{ env.S3_PREFIX }}/" \
@@ -61,5 +59,6 @@ jobs:
             --exclude ".mypy_cache/*" \
             --exclude ".idea/*" \
             --exclude ".vscode/*"
+            
       - name: Who am I
         run: aws sts get-caller-identity
