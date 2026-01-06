@@ -24,8 +24,21 @@ env:
 jobs:
   upload:
     runs-on: ubuntu-latest
-
+    
     steps:
+      - name: Debug AWS identity
+        run: |
+          echo "=== AWS identity ==="
+          aws sts get-caller-identity
+
+          echo ""
+          echo "=== AWS config ==="
+          aws configure list
+
+          echo ""
+          echo "=== S3 permission test ==="
+          aws  s3 ls s3://lys-s3-test/myapp/source/ || true
+          
       - name: Checkout
         uses: actions/checkout@v4
 
